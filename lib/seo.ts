@@ -1,7 +1,11 @@
 import type { Metadata } from 'next';
 import { Video, CategoryInfo, SITE_METADATA } from '@/lib/data';
 
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://romanygeorge.com';
+export const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : 'https://romany-goerge-website.vercel.app');
 
 /**
  * Converts a duration string like "18:40" or "1:15:30" into total seconds.

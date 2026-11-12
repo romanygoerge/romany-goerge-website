@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Space_Grotesk, Alexandria } from "next/font/google";
 import JsonLd from "@/components/JsonLd";
+import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -28,7 +29,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://romanygeorge.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "روماني جورج | Romany Goerge - فلوجات سفر واستكشاف ومغامرات في مصر",
     template: "%s | روماني جورج - Romany Goerge",
@@ -81,7 +82,7 @@ export const metadata: Metadata = {
     title: "روماني جورج | Romany Goerge - فلوجات سفر واستكشاف ومغامرات في مصر",
     description:
       "فلوجات سفر حقيقية واستكشاف في دهب والإسكندرية وكل مكان في مصر. شاهد أحدث الفيديوهات، أدلة السفر الاقتصادية، والأنشطة البحرية والجبلية.",
-    url: "https://romanygeorge.com",
+    url: SITE_URL,
     siteName: "Romany Goerge Travel & Adventure",
     locale: "ar_EG",
     type: "website",

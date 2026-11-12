@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { Clock, Calendar, ArrowRight, Bookmark, Share2, Compass, Play, Download, ExternalLink } from 'lucide-react';
 import { ARTICLES, VIDEOS, SPOTLIGHT_VIDEO, SITE_METADATA } from '@/lib/data';
+import { SITE_URL } from '@/lib/seo';
 import YoutubeIcon from '@/components/YoutubeIcon';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -31,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = `${article.title} | دليل سفر وميزانية - روماني جورج`;
   const description = article.excerpt;
-  const url = `https://romanygeorge.com/articles/${article.id}`;
+  const url = `${SITE_URL}/articles/${article.id}`;
   const relatedVid = [SPOTLIGHT_VIDEO, ...VIDEOS].find((v) => v.id === article.relatedVideoId);
   const image = relatedVid ? relatedVid.thumbnail : `https://i.ytimg.com/vi/${SPOTLIGHT_VIDEO.youtubeId}/maxresdefault.jpg`;
 
@@ -88,7 +89,7 @@ export default async function ArticlePage({ params }: Props) {
     dateModified: '2026-11-10T12:00:00+02:00',
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://romanygeorge.com/articles/${article.id}`,
+      '@id': `${SITE_URL}/articles/${article.id}`,
     },
     author: {
       '@type': 'Person',
@@ -114,19 +115,19 @@ export default async function ArticlePage({ params }: Props) {
         '@type': 'ListItem',
         position: 1,
         name: 'الرئيسية',
-        item: 'https://romanygeorge.com',
+        item: SITE_URL,
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: 'أدلة الوجهات',
-        item: 'https://romanygeorge.com#articles',
+        item: `${SITE_URL}#articles`,
       },
       {
         '@type': 'ListItem',
         position: 3,
         name: article.title,
-        item: `https://romanygeorge.com/articles/${article.id}`,
+        item: `${SITE_URL}/articles/${article.id}`,
       },
     ],
   };
