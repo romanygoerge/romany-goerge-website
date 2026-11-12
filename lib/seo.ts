@@ -278,3 +278,4 @@ export function generateCategoryMetadata(category: CategoryInfo, baseUrl = SITE_
     },
   };
 }
+

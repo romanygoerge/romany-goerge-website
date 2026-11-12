@@ -74,6 +74,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+  verification: {
+    google: "googlefd279e11798c7168",
+  },
   openGraph: {
     title: "روماني جورج | Romany Goerge - فلوجات سفر واستكشاف ومغامرات في مصر",
     description:
