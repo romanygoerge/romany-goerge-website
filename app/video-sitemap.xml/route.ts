@@ -10,7 +10,7 @@ export async function GET() {
     .map((video) => {
       const pageUrl = `${baseUrl}/videos/${video.slug}`;
       const thumbnailLoc = `https://i.ytimg.com/vi/${video.youtubeId}/maxresdefault.jpg`;
-      const playerLoc = `https://www.youtube-nocookie.com/embed/${video.youtubeId}`;
+      const playerLoc = `https://www.youtube.com/embed/${video.youtubeId}`;
       const contentLoc = `https://www.youtube.com/watch?v=${video.youtubeId}`;
       const durationSeconds = video.durationSeconds || 900;
       const pubDate = video.uploadDate || '2026-06-01T08:00:00+02:00';

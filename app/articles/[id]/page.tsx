@@ -244,7 +244,7 @@ export default async function ArticlePage({ params }: Props) {
               <div className="relative aspect-video w-full bg-black">
                 <iframe
                   className="w-full h-full"
-                  src={`https://www.youtube-nocookie.com/embed/${relatedVideo.youtubeId}?rel=0`}
+                  src={`https://www.youtube.com/embed/${relatedVideo.youtubeId}?rel=0`}
                   title={relatedVideo.title}
                   loading="lazy"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

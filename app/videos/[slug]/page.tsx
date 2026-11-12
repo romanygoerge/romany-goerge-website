@@ -166,7 +166,7 @@ export default async function VideoPage({ params }: PageProps) {
             <div className="relative aspect-video w-full">
               <iframe
                 className="w-full h-full"
-                src={`https://www.youtube-nocookie.com/embed/${video.youtubeId}?autoplay=1&rel=0`}
+                src={`https://www.youtube.com/embed/${video.youtubeId}?rel=0`}
                 title={video.title}
                 loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

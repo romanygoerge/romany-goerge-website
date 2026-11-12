@@ -80,7 +80,7 @@ export function generateVideoJsonLd(video: Video, baseUrl = SITE_URL) {
     uploadDate: uploadDate,
     duration: isoDuration,
     contentUrl: `https://www.youtube.com/watch?v=${video.youtubeId}`,
-    embedUrl: `https://www.youtube-nocookie.com/embed/${video.youtubeId}`,
+    embedUrl: `https://www.youtube.com/embed/${video.youtubeId}`,
     inLanguage: 'ar',
     isFamilyFriendly: true,
     keywords: (video.seoKeywords || []).join(', '),
@@ -227,7 +227,7 @@ export function generateVideoMetadata(video: Video, baseUrl = SITE_URL): Metadat
       ],
       videos: [
         {
-          url: `https://www.youtube-nocookie.com/embed/${video.youtubeId}`,
+          url: `https://www.youtube.com/embed/${video.youtubeId}`,
           width: 1280,
           height: 720,
           type: 'text/html',
