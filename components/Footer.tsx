@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
 import { Compass, ArrowLeft, CheckCircle2 } from 'lucide-react';
-import { SITE_METADATA } from '@/lib/data';
+import { SITE_METADATA, CATEGORIES } from '@/lib/data';
 
 interface FooterProps {
   onSubscribe?: (email: string) => void;
@@ -24,9 +25,9 @@ export default function Footer({ onSubscribe }: FooterProps) {
   return (
     <footer className="w-full bg-white border-t border-[#e4e4e7] mt-16 text-[#09090b]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14 sm:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start pb-12 border-b border-[#e4e4e7]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10 items-start pb-12 border-b border-[#e4e4e7]">
           {/* Col 1: Bio & Socials */}
-          <div className="md:col-span-5 space-y-4 text-right">
+          <div className="sm:col-span-2 lg:col-span-4 space-y-4 text-right">
             <div className="flex items-center gap-3">
               <div className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-zinc-800">
                 <Image
@@ -79,64 +80,79 @@ export default function Footer({ onSubscribe }: FooterProps) {
           </div>
 
           {/* Col 2: Navigation Links */}
-          <div className="md:col-span-3 space-y-4 text-right">
+          <div className="lg:col-span-2 space-y-4 text-right">
             <h4 className="text-base font-bold text-[#09090b]">أقسام المنصة</h4>
             <ul className="space-y-2.5 text-xs sm:text-sm">
               <li>
-                <a
-                  href="#videos"
+                <Link
+                  href="/#videos"
                   className="text-[#52525b] hover:text-red-600 transition-colors block"
                 >
-                  فلوجات دهب والإسكندرية
-                </a>
+                  فلوجات السفر والمغامرة
+                </Link>
               </li>
               <li>
-                <a
-                  href="#articles"
+                <Link
+                  href="/#articles"
                   className="text-[#52525b] hover:text-red-600 transition-colors block"
                 >
                   أدلة السفر والميزانيات
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#tools"
+                <Link
+                  href="/#tools"
                   className="text-[#52525b] hover:text-red-600 transition-colors block"
                 >
                   قوائم التجهيز وحاسبة الميزانية
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#about"
+                <Link
+                  href="/#about"
                   className="text-[#52525b] hover:text-red-600 transition-colors block"
                 >
                   عن روماني جورج والرحلة
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#faq"
+                <Link
+                  href="/#faq"
                   className="text-[#52525b] hover:text-red-600 transition-colors block"
                 >
                   الأسئلة الشائعة للسفر
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
 
-          {/* Col 3: Quick Subscribe */}
-          <div className="md:col-span-4 space-y-4 text-right">
-            <h4 className="text-base font-bold text-[#09090b]">
-              نشرة المسافر الأسبوعية
-            </h4>
-            <p className="text-xs sm:text-sm text-[#52525b] leading-relaxed">
+          {/* Col 3: Destination Categories */}
+          <div className="lg:col-span-2 space-y-4 text-right">
+            <h4 className="text-base font-bold text-[#09090b]">تصنيفات الوجهات</h4>
+            <ul className="space-y-2.5 text-xs sm:text-sm">
+              {CATEGORIES.map((cat) => (
+                <li key={cat.key}>
+                  <Link
+                    href={`/categories/${cat.key}`}
+                    className="text-[#52525b] hover:text-red-600 transition-colors block"
+                  >
+                    {cat.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Col 4: Quick Subscribe */}
+          <div className="sm:col-span-2 lg:col-span-4 space-y-4 text-right">
+            <h4 className="text-base font-bold text-[#09090b]">نشرة المسافر الأسبوعية</h4>
+            <p className="text-xs text-[#52525b] leading-relaxed">
               احصل أسبوعياً على وجهات جديدة وترشيحات أماكن خروج وتخييم اقتصادية مجاناً.
             </p>
 
             {subscribed ? (
-              <div className="flex items-center gap-2 p-3 bg-zinc-100 text-[#09090b] rounded-xl text-xs font-semibold">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>تم تسجيل بريدك بنجاح! شكراً لك.</span>
               </div>
             ) : (
@@ -176,9 +192,9 @@ export default function Footer({ onSubscribe }: FooterProps) {
               قناة يوتيوب @RomanyGoerge25
             </a>
             <span className="text-[#e4e4e7]">•</span>
-            <a href="#about" className="hover:text-[#09090b] transition-colors">
+            <Link href="/#about" className="hover:text-[#09090b] transition-colors">
               سياسة المحتوى
-            </a>
+            </Link>
           </div>
         </div>
       </div>
