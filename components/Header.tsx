@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
 import { PlayCircle, Menu, X, ExternalLink, Compass } from 'lucide-react';
 import { SITE_METADATA } from '@/lib/data';
@@ -22,12 +23,12 @@ export default function Header({ activeSection }: HeaderProps) {
   }, []);
 
   const navLinks = [
-    { href: '#home', label: 'الرئيسية', id: 'home' },
-    { href: '#videos', label: 'فلوجات السفر', id: 'videos' },
-    { href: '#articles', label: 'أدلة الوجهات', id: 'articles' },
-    { href: '#tools', label: 'أدوات المسافر', id: 'tools' },
-    { href: '#about', label: 'عن روماني', id: 'about' },
-    { href: '#faq', label: 'الأسئلة الشائعة', id: 'faq' },
+    { href: '/#home', label: 'الرئيسية', id: 'home' },
+    { href: '/#videos', label: 'فلوجات السفر', id: 'videos' },
+    { href: '/#articles', label: 'أدلة الوجهات', id: 'articles' },
+    { href: '/#tools', label: 'أدوات المسافر', id: 'tools' },
+    { href: '/#about', label: 'عن روماني', id: 'about' },
+    { href: '/#faq', label: 'الأسئلة الشائعة', id: 'faq' },
   ];
 
   return (
@@ -40,7 +41,7 @@ export default function Header({ activeSection }: HeaderProps) {
     >
       <div className="h-20 max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
         {/* Creator Brand / Logo */}
-        <a href="#home" className="flex items-center gap-3 shrink-0 group">
+        <Link href="/" className="flex items-center gap-3 shrink-0 group">
           <div className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-zinc-800 shadow-xs group-hover:scale-105 transition-transform">
             <Image
               src={SITE_METADATA.avatarUrl}
@@ -60,7 +61,7 @@ export default function Header({ activeSection }: HeaderProps) {
               {SITE_METADATA.tagline}
             </span>
           </div>
-        </a>
+        </Link>
 
         {/* Center Desktop Navigation Pill */}
         <nav className="hidden lg:flex items-center gap-1 p-1 bg-[#f4f4f5] rounded-xl border border-[#e4e4e7]">

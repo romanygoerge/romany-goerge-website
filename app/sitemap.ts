@@ -1,16 +1,25 @@
 import { MetadataRoute } from 'next';
-import { VIDEOS, SPOTLIGHT_VIDEO, ARTICLES } from '@/lib/data';
+import { getAllVideos, CATEGORIES, ARTICLES } from '@/lib/data';
+import { SITE_URL } from '@/lib/seo';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://romanygeorge.com';
+  const baseUrl = SITE_URL;
   const lastModified = new Date();
 
-  const allVideos = [SPOTLIGHT_VIDEO, ...VIDEOS];
+  const allVideos = getAllVideos();
 
-  // Video pages
-  const videoEntries: MetadataRoute.Sitemap = allVideos.map((video) => ({
-    url: `${baseUrl}/videos/${video.id}`,
+  // Category pages
+  const categoryEntries: MetadataRoute.Sitemap = CATEGORIES.map((cat) => ({
+    url: `${baseUrl}/categories/${cat.key}`,
     lastModified,
+    changeFrequency: 'weekly',
+    priority: 0.9,
+  }));
+
+  // Video pages (using clean SEO slugs)
+  const videoEntries: MetadataRoute.Sitemap = allVideos.map((video) => ({
+    url: `${baseUrl}/videos/${video.slug}`,
+    lastModified: new Date(video.uploadDate || lastModified),
     changeFrequency: 'weekly',
     priority: 0.85,
   }));
@@ -30,36 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'daily',
       priority: 1.0,
     },
-    {
-      url: `${baseUrl}#videos`,
-      lastModified,
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}#articles`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}#tools`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}#about`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}#faq`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
+    ...categoryEntries,
     ...videoEntries,
     ...articleEntries,
   ];

@@ -1,15 +1,16 @@
 import React from 'react';
-import { SITE_METADATA, VIDEOS, SPOTLIGHT_VIDEO, FAQ_ITEMS } from '@/lib/data';
+import { SITE_METADATA, FAQ_ITEMS, SPOTLIGHT_VIDEO } from '@/lib/data';
+import { SITE_URL, generateVideoJsonLd } from '@/lib/seo';
 
 export default function JsonLd() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://romanygeorge.com';
+  const baseUrl = SITE_URL;
 
   // WebSite & Person Schema
   const websiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'روماني جورج | Romany Goerge - فلوجات سفر ومغامرات في مصر',
-    alternateName: ['Romany Goerge', 'روماني جورج', 'قناة روماني جورج يوتيوب'],
+    name: `${SITE_METADATA.creatorName} | ${SITE_METADATA.englishName} - فلوجات سفر ومغامرات في مصر`,
+    alternateName: ['Romany Goerge', 'روماني جورج', 'قناة روماني جورج يوتيوب', 'Romany Goerge Travel'],
     url: baseUrl,
     description: SITE_METADATA.bio,
     inLanguage: 'ar',
@@ -28,33 +29,33 @@ export default function JsonLd() {
     },
   };
 
-  // Video Objects for Google Video Search Indexing
-  const allVideos = [SPOTLIGHT_VIDEO, ...VIDEOS];
-  const videoSchemas = allVideos.map((video) => ({
+  // Channel Person / Creator Schema
+  const personSchema = {
     '@context': 'https://schema.org',
-    '@type': 'VideoObject',
-    name: video.title,
-    description: video.description,
-    thumbnailUrl: [
-      video.thumbnail,
-      `https://i.ytimg.com/vi/${video.youtubeId}/hqdefault.jpg`,
-      `https://i.ytimg.com/vi/${video.youtubeId}/maxresdefault.jpg`,
+    '@type': 'Person',
+    name: SITE_METADATA.creatorName,
+    alternateName: SITE_METADATA.englishName,
+    url: SITE_METADATA.channelUrl,
+    image: SITE_METADATA.avatarUrl,
+    description: SITE_METADATA.bio,
+    sameAs: [
+      SITE_METADATA.channelUrl,
+      SITE_METADATA.socials.youtube,
     ],
-    uploadDate: '2026-06-01T08:00:00+02:00',
-    contentUrl: `https://www.youtube.com/watch?v=${video.youtubeId}`,
-    embedUrl: `https://www.youtube.com/embed/${video.youtubeId}`,
-    publisher: {
-      '@type': 'Person',
-      name: SITE_METADATA.creatorName,
-      url: SITE_METADATA.channelUrl,
-      logo: {
-        '@type': 'ImageObject',
-        url: SITE_METADATA.avatarUrl,
-      },
-    },
-  }));
+    jobTitle: 'رحالة ومستكشف سياحي',
+    knowsAbout: [
+      'سياحة دهب',
+      'فلوجات السفر في مصر',
+      'شواطئ الإسكندرية',
+      'شواطئ مرسى مطروح',
+      'السياحة الثقافية في القاهرة',
+      'المتحف المصري الكبير',
+      'الدايفنج والأنشطة البحرية',
+      'السفر الاقتصادي والميزانية',
+    ],
+  };
 
-  // FAQ Schema for Google Search Rich Snippets
+  // FAQ Schema for Rich Snippets
   const faqSchema = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -74,13 +75,10 @@ export default function JsonLd() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
       />
-      {videoSchemas.map((vSchema, idx) => (
-        <script
-          key={`video-${idx}`}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(vSchema) }}
-        />
-      ))}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
@@ -88,4 +86,3 @@ export default function JsonLd() {
     </>
   );
 }
-

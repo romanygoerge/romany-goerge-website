@@ -45,7 +45,7 @@ export default function HeroSection() {
           {/* CTA Action Buttons */}
           <div className="flex flex-wrap items-center gap-3 pt-2 w-full sm:w-auto">
             <Link
-              href={`/videos/${SPOTLIGHT_VIDEO.id}`}
+              href={`/videos/${SPOTLIGHT_VIDEO.slug}`}
               className="group relative inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#09090b] text-white text-sm font-bold shadow-md hover:bg-zinc-800 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
             >
               <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">

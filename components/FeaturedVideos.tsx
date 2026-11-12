@@ -39,6 +39,17 @@ export default function FeaturedVideos() {
             <p className="text-sm sm:text-base text-[#52525b]">
               فيديوهات وثائقية طويلة تصحبك خطوة بخطوة في قلب التجربة: أسعار، أنشطة، وأماكن حقيقية.
             </p>
+            {activeCategory !== 'all' && (
+              <div className="pt-1">
+                <Link
+                  href={`/categories/${activeCategory}`}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-red-600 hover:text-red-700 underline underline-offset-4"
+                >
+                  <span>عرض صفحة تصنيف {filterTabs.find((t) => t.id === activeCategory)?.label} كاملة بالأدلة والمقالات</span>
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Filter Pill Tabs */}
@@ -66,8 +77,8 @@ export default function FeaturedVideos() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {filteredVideos.map((video) => (
             <Link
-              key={video.id}
-              href={`/videos/${video.id}`}
+              key={video.slug}
+              href={`/videos/${video.slug}`}
               className="group flex flex-col bg-[#fafafa] rounded-2xl border border-[#e4e4e7] overflow-hidden hover:border-zinc-400 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
             >
               {/* Thumbnail Container */}

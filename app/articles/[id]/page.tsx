@@ -232,7 +232,7 @@ export default async function ArticlePage({ params }: Props) {
                   <span>الفلوج المصور لهذه الرحلة متوفر للمشاهدة:</span>
                 </span>
                 <Link
-                  href={`/videos/${relatedVideo.id}`}
+                  href={`/videos/${relatedVideo.slug}`}
                   className="text-xs text-red-400 hover:text-red-300 font-bold flex items-center gap-1"
                 >
                   <span>صفحة الفلوج الكاملة</span>
@@ -243,8 +243,9 @@ export default async function ArticlePage({ params }: Props) {
               <div className="relative aspect-video w-full bg-black">
                 <iframe
                   className="w-full h-full"
-                  src={`https://www.youtube.com/embed/${relatedVideo.youtubeId}?rel=0`}
+                  src={`https://www.youtube-nocookie.com/embed/${relatedVideo.youtubeId}?rel=0`}
                   title={relatedVideo.title}
+                  loading="lazy"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 />
