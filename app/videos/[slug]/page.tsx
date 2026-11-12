@@ -22,6 +22,7 @@ import {
   SITE_METADATA,
   Video,
 } from '@/lib/data';
+import { getLiveOrCachedVideos } from '@/lib/youtube';
 import {
   generateVideoMetadata,
   generateVideoJsonLd,
@@ -45,7 +46,12 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const video = getVideoBySlugOrId(slug);
+  let video = getVideoBySlugOrId(slug);
+
+  if (!video) {
+    const liveVideos = await getLiveOrCachedVideos();
+    video = liveVideos.find((v) => v.slug === slug || v.id === slug || v.youtubeId === slug);
+  }
 
   if (!video) {
     return {
@@ -59,7 +65,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function VideoPage({ params }: PageProps) {
   const { slug } = await params;
-  const video = getVideoBySlugOrId(slug);
+  let video = getVideoBySlugOrId(slug);
+
+  if (!video) {
+    const liveVideos = await getLiveOrCachedVideos();
+    video = liveVideos.find((v) => v.slug === slug || v.id === slug || v.youtubeId === slug);
+  }
 
   if (!video) {
     notFound();
@@ -70,7 +81,7 @@ export default async function VideoPage({ params }: PageProps) {
     redirect(`/videos/${video.slug}`);
   }
 
-  const allVideos = getAllVideos();
+  const allVideos = await getLiveOrCachedVideos();
   // Related long-form videos (prefer same category, fallback to others)
   const relatedVideos = allVideos
     .filter((v) => v.slug !== video.slug)

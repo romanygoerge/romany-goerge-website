@@ -1,30 +1,5 @@
 import { Video, CategoryKey, getAllVideos } from '@/lib/data';
-import { generateSlug, parseDurationToSeconds, parseDurationToIso } from '@/lib/seo';
-
-interface YouTubeSnippet {
-  title: string;
-  description: string;
-  publishedAt: string;
-  thumbnails: {
-    maxres?: { url: string };
-    standard?: { url: string };
-    high?: { url: string };
-    medium?: { url: string };
-    default?: { url: string };
-  };
-  resourceId?: {
-    videoId: string;
-  };
-}
-
-interface YouTubeContentDetails {
-  duration?: string; // ISO 8601 string e.g. "PT18M40S"
-}
-
-interface YouTubePlaylistItem {
-  snippet: YouTubeSnippet;
-  contentDetails?: YouTubeContentDetails;
-}
+import { generateSlug } from '@/lib/seo';
 
 /**
  * Automatically infers video category based on title and description keywords.
@@ -79,127 +54,98 @@ function extractKeywords(title: string, desc: string): string[] {
 }
 
 /**
- * Reusable SEO Generation & Dynamic Retrieval System.
- * Fetches latest YouTube uploads, filters out Shorts, generates SEO slugs,
- * schemas, and metadata, cached with Next.js ISR revalidation.
+ * 100% Automated YouTube Channel Synchronizer.
+ * Connects directly to the live channel RSS feed, detects new long-form videos,
+ * filters out YouTube Shorts, and generates complete SEO metadata without any API keys!
  */
 export async function getLiveOrCachedVideos(): Promise<Video[]> {
   const curated = getAllVideos();
-  const apiKey = process.env.YOUTUBE_API_KEY;
   const channelId = process.env.YOUTUBE_CHANNEL_ID || 'UCROky7p4-JubAKwQRIDSrHQ';
 
-  // If no API key is provided, return the curated database
-  if (!apiKey) {
-    return curated;
-  }
-
   try {
-    // 1. Get channel uploads playlist ID
-    const channelRes = await fetch(
-      `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${apiKey}`,
-      { next: { revalidate: 3600 } }
-    );
-
-    if (!channelRes.ok) {
-      console.warn(`YouTube Channel API failed with status ${channelRes.status}, falling back to curated.`);
+    const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+    const res = await fetch(feedUrl, { next: { revalidate: 1800 } });
+    if (!res.ok) {
       return curated;
     }
 
-    const channelData = await channelRes.json();
-    const uploadsPlaylistId = channelData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
-    if (!uploadsPlaylistId) {
-      return curated;
-    }
+    const xml = await res.text();
+    const entries = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)];
 
-    // 2. Fetch playlist items
-    const playlistRes = await fetch(
-      `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&playlistId=${uploadsPlaylistId}&maxResults=50&key=${apiKey}`,
-      { next: { revalidate: 3600 } }
-    );
+    const newlyDiscovered: Video[] = [];
 
-    if (!playlistRes.ok) {
-      return curated;
-    }
+    for (const entry of entries) {
+      const match = entry[1];
+      const videoId = match.match(/<yt:videoId>([^<]+)<\/yt:videoId>/)?.[1];
+      const title = match.match(/<title>([^<]+)<\/title>/)?.[1];
+      const published = match.match(/<published>([^<]+)<\/published>/)?.[1];
+      const mediaDesc = match.match(/<media:description>([\s\S]*?)<\/media:description>/)?.[1] || '';
 
-    const playlistData = await playlistRes.json();
-    const items: YouTubePlaylistItem[] = playlistData.items || [];
+      if (!videoId || !title) continue;
 
-    // 3. Process items and merge with curated metadata
-    const liveVideos: Video[] = [];
-
-    for (const item of items) {
-      const videoId = item.snippet.resourceId?.videoId;
-      if (!videoId) continue;
-
-      // Check if we already have curated high-fidelity information for this video
-      const existing = curated.find((c) => c.youtubeId === videoId || c.id === videoId);
-      if (existing) {
-        liveVideos.push(existing);
+      // If this video is already in our curated dataset, skip
+      if (curated.some((c) => c.youtubeId === videoId || c.id === videoId)) {
         continue;
       }
 
-      // If it's a new video not yet in curated list, generate automated SEO metadata
-      const title = item.snippet.title;
-      const description = item.snippet.description;
+      // Detect if it's a long video or a short:
+      // YouTube returns a 303 redirect to /watch?v=... for long videos when requested on /shorts/...
+      try {
+        const checkRes = await fetch(`https://www.youtube.com/shorts/${videoId}`, {
+          method: 'HEAD',
+          redirect: 'manual',
+        });
+        const isLong = checkRes.status === 303 || checkRes.status === 302 || checkRes.status === 301;
 
-      // Filter out shorts (exclude if title contains #shorts or description indicates shorts)
-      if (title.toLowerCase().includes('#shorts') || description.toLowerCase().includes('#shorts')) {
-        continue;
-      }
+        if (isLong) {
+          const category = inferCategory(title, mediaDesc);
+          const slug = generateSlug(title) || `video-${videoId}`;
+          const keywords = extractKeywords(title, mediaDesc);
 
-      const category = inferCategory(title, description);
-      const slug = generateSlug(title) || `video-${videoId}`;
-      const keywords = extractKeywords(title, description);
-      const thumbnail =
-        item.snippet.thumbnails.maxres?.url ||
-        item.snippet.thumbnails.high?.url ||
-        item.snippet.thumbnails.medium?.url ||
-        `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+          const newVideo: Video = {
+            id: videoId,
+            slug: slug,
+            title: title,
+            seoTitle: `${title} | فلوج روماني جورج`,
+            description:
+              mediaDesc.trim() ||
+              `شاهد فلوج ${title} مع الرحالة وصانع المحتوى روماني جورج واستكشف أسرار وتفاصيل هذه التجربة السفرية بأقل ميزانية.`,
+            seoDescription: (mediaDesc || title).slice(0, 160),
+            primaryKeyword: keywords[0] || 'فلوج سفر',
+            secondaryKeywords: keywords.slice(1),
+            category: category.key,
+            categoryLabel: category.label,
+            duration: '15:00',
+            durationSeconds: 900,
+            isoDuration: 'PT15M',
+            views: 'جديد',
+            publishedAt: new Date(published || Date.now()).toLocaleDateString('ar-EG', {
+              year: 'numeric',
+              month: 'long',
+            }),
+            uploadDate: published || new Date().toISOString(),
+            thumbnail: `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
+            youtubeId: videoId,
+            seoKeywords: keywords,
+            budgetTips: [
+              'احرص دائماً على مراجعة الأسعار مع السكان المحليين لضمان أفضل تجربة بأوفر تكلفة.',
+              'اشترك في القناة ليصلك كل جديد من فلوجات وأسرار السفر الاقتصادي في مصر.',
+            ],
+          };
 
-      const newVideo: Video = {
-        id: videoId,
-        slug: slug,
-        title: title,
-        seoTitle: `${title} | فلوج روماني جورج`,
-        description: description,
-        seoDescription: description.slice(0, 160) + '...',
-        primaryKeyword: keywords[0] || 'فلوج سفر',
-        secondaryKeywords: keywords.slice(1),
-        category: category.key,
-        categoryLabel: category.label,
-        duration: '15:00', // Default fallback if contentDetails duration is not populated
-        durationSeconds: 900,
-        isoDuration: 'PT15M',
-        views: 'جديد',
-        publishedAt: new Date(item.snippet.publishedAt).toLocaleDateString('ar-EG', {
-          year: 'numeric',
-          month: 'long',
-        }),
-        uploadDate: item.snippet.publishedAt,
-        thumbnail: thumbnail,
-        youtubeId: videoId,
-        seoKeywords: keywords,
-        budgetTips: [
-          'احرص دائماً على مراجعة الأسعار مع السكان المحليين لضمان أفضل تجربة بأوفر تكلفة.',
-          'اشترك في القناة ليصلك كل جديد من فلوجات وأسرار السفر الاقتصادي في مصر.',
-        ],
-      };
-
-      liveVideos.push(newVideo);
-    }
-
-    // Return merged list, ensuring all curated videos are included even if unlisted
-    const allIds = new Set(liveVideos.map((v) => v.youtubeId));
-    for (const c of curated) {
-      if (!allIds.has(c.youtubeId)) {
-        liveVideos.push(c);
+          newlyDiscovered.push(newVideo);
+        }
+      } catch (checkErr) {
+        console.warn(`Could not verify video ${videoId}:`, checkErr);
       }
     }
 
-    return liveVideos;
+    if (newlyDiscovered.length > 0) {
+      return [...newlyDiscovered, ...curated];
+    }
+    return curated;
   } catch (error) {
-    console.error('Error in YouTube live generation:', error);
+    console.error('Error fetching live YouTube RSS feed:', error);
     return curated;
   }
 }
-

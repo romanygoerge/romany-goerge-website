@@ -1,9 +1,10 @@
-import { getAllVideos, SITE_METADATA } from '@/lib/data';
+import { SITE_METADATA } from '@/lib/data';
 import { SITE_URL } from '@/lib/seo';
+import { getLiveOrCachedVideos } from '@/lib/youtube';
 
 export async function GET() {
   const baseUrl = SITE_URL;
-  const videos = getAllVideos();
+  const videos = await getLiveOrCachedVideos();
 
   const xmlEntries = videos
     .map((video) => {

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Play, TrendingUp, ArrowLeft, Compass, Bell, ExternalLink, MapPin } from 'lucide-react';
@@ -9,6 +9,19 @@ import YoutubeIcon from '@/components/YoutubeIcon';
 
 export default function FeaturedVideos() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [videosList, setVideosList] = useState<Video[]>(VIDEOS);
+
+  // Automatically fetch live synced videos from channel feed
+  useEffect(() => {
+    fetch('/api/videos')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setVideosList(data);
+        }
+      })
+      .catch((err) => console.log('Using cached video list:', err));
+  }, []);
 
   const filterTabs = [
     { id: 'all', label: 'الكل (جميع الفلوجات)' },
@@ -20,8 +33,8 @@ export default function FeaturedVideos() {
   ];
 
   const filteredVideos = activeCategory === 'all'
-    ? VIDEOS
-    : VIDEOS.filter((v) => v.category === activeCategory);
+    ? videosList
+    : videosList.filter((v) => v.category === activeCategory);
 
   return (
     <section className="w-full bg-white border-y border-[#e4e4e7] py-16 sm:py-20 my-10" id="videos">
@@ -31,10 +44,10 @@ export default function FeaturedVideos() {
           <div className="text-right space-y-2">
             <div className="flex items-center gap-2 text-[#09090b] text-xs font-bold uppercase tracking-wider">
               <Compass className="w-4 h-4 text-red-600" />
-              <span>مكتبة الفلوجات الكاملة (بدون شورتس)</span>
+              <span>مكتبة الفلوجات الكاملة (تحديث تلقائي بدون شورتس)</span>
             </div>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#09090b] tracking-tight">
-              فلوجات السفر والمغامرة في مصر ({VIDEOS.length} فلوج كامل)
+              فلوجات السفر والمغامرة في مصر ({videosList.length} فلوج كامل)
             </h2>
             <p className="text-sm sm:text-base text-[#52525b]">
               فيديوهات وثائقية طويلة تصحبك خطوة بخطوة في قلب التجربة: أسعار، أنشطة، وأماكن حقيقية.
