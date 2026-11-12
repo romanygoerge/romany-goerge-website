@@ -40,49 +40,54 @@ export default function FeaturedVideos() {
     <section className="w-full bg-white border-y border-[#e4e4e7] py-16 sm:py-20 my-10" id="videos">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col space-y-10">
         {/* Section Header & Filter Tabs */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="text-right space-y-2">
-            <div className="flex items-center gap-2 text-[#09090b] text-xs font-bold uppercase tracking-wider">
-              <Compass className="w-4 h-4 text-red-600" />
-              <span>مكتبة الفلوجات الكاملة (تحديث تلقائي بدون شورتس)</span>
+        <div className="flex flex-col space-y-6">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+            <div className="text-right space-y-2 max-w-3xl">
+              <div className="inline-flex items-center gap-2 text-[#09090b] text-xs font-bold uppercase tracking-wider">
+                <Compass className="w-4 h-4 text-red-600" />
+                <span>مكتبة الفلوجات الكاملة (تحديث تلقائي بدون شورتس)</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#09090b] tracking-tight leading-snug">
+                فلوجات السفر والمغامرة في مصر ({videosList.length} فلوج كامل)
+              </h2>
+              <p className="text-sm sm:text-base text-[#52525b] leading-relaxed">
+                فيديوهات وثائقية طويلة تصحبك خطوة بخطوة في قلب التجربة: أسعار، أنشطة، وأماكن حقيقية.
+              </p>
             </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#09090b] tracking-tight">
-              فلوجات السفر والمغامرة في مصر ({videosList.length} فلوج كامل)
-            </h2>
-            <p className="text-sm sm:text-base text-[#52525b]">
-              فيديوهات وثائقية طويلة تصحبك خطوة بخطوة في قلب التجربة: أسعار، أنشطة، وأماكن حقيقية.
-            </p>
+
             {activeCategory !== 'all' && (
-              <div className="pt-1">
+              <div className="shrink-0">
                 <Link
                   href={`/categories/${activeCategory}`}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-red-600 hover:text-red-700 underline underline-offset-4"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold rounded-xl border border-red-200 transition-colors"
                 >
-                  <span>عرض صفحة تصنيف {filterTabs.find((t) => t.id === activeCategory)?.label} كاملة بالأدلة والمقالات</span>
+                  <span>عرض صفحة قسم {filterTabs.find((t) => t.id === activeCategory)?.label} كاملة</span>
                   <ArrowLeft className="w-3.5 h-3.5" />
                 </Link>
               </div>
             )}
           </div>
 
-          {/* Filter Pill Tabs */}
-          <div className="flex items-center gap-1.5 bg-[#f4f4f5] p-1.5 rounded-xl border border-[#e4e4e7] overflow-x-auto self-start md:self-auto shrink-0 max-w-full">
-            {filterTabs.map((tab) => {
-              const isActive = activeCategory === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveCategory(tab.id)}
-                  className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
-                    isActive
-                      ? 'bg-[#09090b] text-white shadow-xs'
-                      : 'text-[#52525b] hover:text-[#09090b] hover:bg-zinc-200/60'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              );
-            })}
+          {/* Filter Pill Tabs Bar */}
+          <div className="w-full flex items-center justify-start overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div className="inline-flex items-center gap-1.5 bg-[#f4f4f5] p-1.5 rounded-2xl border border-[#e4e4e7] shrink-0">
+              {filterTabs.map((tab) => {
+                const isActive = activeCategory === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveCategory(tab.id)}
+                    className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                      isActive
+                        ? 'bg-[#09090b] text-white shadow-xs font-bold'
+                        : 'text-[#52525b] hover:text-[#09090b] hover:bg-zinc-200/60'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
